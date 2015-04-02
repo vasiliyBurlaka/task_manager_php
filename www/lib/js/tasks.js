@@ -1,3 +1,15 @@
+
+function mu_submit(){
+    console.log(123);
+   $.getJSON( "requests.php", {'act':'login', 'login':$('#inputEmail').val(), 'pass':$('#inputPassword').val()}, function( data ) {
+       if (data['status'] == 'ok') {
+           location.reload();
+       } else {
+           $('#message').html(data['description']).fadeIn(1000).fadeOut(2000);
+       }
+   });
+}
+
 function init() {
     $('#projects').load("requests.php", {'act':'load'}, function() {
         addHoverOnPrgTop();
@@ -34,8 +46,7 @@ function clickPen(elem) {
     $('.inp_edit:last').focus();
     $('.inp_edit').focusout(function(){
         var text = $(this).val();
-        text = text.replace('<','&rght;');
-        text = text.replace('>','&left;');
+        text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         $(this).parent().html('<span>'+text+'</span>');
         saveAll();
@@ -44,6 +55,10 @@ function clickPen(elem) {
         $(elem).keypress(function(e){
             if (e.keyCode == 13) {
                 var text = $(this).val();
+                console.log(text);
+                text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                console.log(text);
+
                 $(this).parent().html('<span>'+text+'</span>');
                 saveAll();
             }
@@ -77,8 +92,7 @@ function addTodoList() {
 function addTask(elem) {
     var text = $(elem).parent().parent().find('.form-control').val();
     var after_task = $(elem).parent().parent().parent().parent().find('.draggable');
-    text = text.replace('<','&lt;');
-    text = text.replace('>','&gt;');
+    text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     if (text !='') {
         $.getJSON( "requests.php", {'act':'get_task', 'name': text}, function( data ) {
@@ -126,5 +140,12 @@ function saveAll() {
         } else {
             //show error
         }
+    });
+}
+
+function logout() {
+    $.getJSON( "requests.php", {'act':'logout'}, function() {
+        console.log(123);
+        location.reload();
     });
 }
